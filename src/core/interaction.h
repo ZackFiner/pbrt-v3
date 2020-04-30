@@ -124,6 +124,14 @@ class SurfaceInteraction : public Interaction {
                        const Normal3f &dndu, const Normal3f &dndv, Float time,
                        const Shape *sh,
                        int faceIndex = 0);
+	SurfaceInteraction(const Point3f &p, const Vector3f &pError,
+		const Point2f &uv, const Vector3f &wo,
+		const Vector3f &dpdu, const Vector3f &dpdv,
+		const Normal3f &dndu, const Normal3f &dndv, Float time,
+		const Shape *sh,
+		const Vector3f & orbitTrap,
+		int faceIndex = 0,
+		int rayMarchSteps = 0);
     void SetShadingGeometry(const Vector3f &dpdu, const Vector3f &dpdv,
                             const Normal3f &dndu, const Normal3f &dndv,
                             bool orientationIsAuthoritative);
@@ -138,6 +146,7 @@ class SurfaceInteraction : public Interaction {
     Point2f uv;
     Vector3f dpdu, dpdv;
     Normal3f dndu, dndv;
+	
     const Shape *shape = nullptr;
     struct {
         Normal3f n;
@@ -154,6 +163,9 @@ class SurfaceInteraction : public Interaction {
     // index with an intersection point for use in Ptex texture lookups.
     // If Ptex isn't being used, then this value is ignored.
     int faceIndex = 0;
+
+	int rayMarchSteps = 0;
+	Vector3f orbitTrap;
 };
 
 }  // namespace pbrt
