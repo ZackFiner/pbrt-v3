@@ -81,6 +81,7 @@
 #include "materials/subsurface.h"
 #include "materials/translucent.h"
 #include "materials/uber.h"
+#include "materials/orbittrap.h"
 #include "samplers/halton.h"
 #include "samplers/maxmin.h"
 #include "samplers/random.h"
@@ -568,22 +569,24 @@ STAT_COUNTER("Scene/Materials created", nMaterialsCreated);
 std::shared_ptr<Material> MakeMaterial(const std::string &name,
                                        const TextureParams &mp) {
     Material *material = nullptr;
-    if (name == "" || name == "none")
-        return nullptr;
-    else if (name == "matte")
-        material = CreateMatteMaterial(mp);
-    else if (name == "plastic")
-        material = CreatePlasticMaterial(mp);
-    else if (name == "translucent")
-        material = CreateTranslucentMaterial(mp);
-    else if (name == "glass")
-        material = CreateGlassMaterial(mp);
-    else if (name == "mirror")
-        material = CreateMirrorMaterial(mp);
-    else if (name == "hair")
-        material = CreateHairMaterial(mp);
-    else if (name == "disney")
-        material = CreateDisneyMaterial(mp);
+	if (name == "" || name == "none")
+		return nullptr;
+	else if (name == "matte")
+		material = CreateMatteMaterial(mp);
+	else if (name == "plastic")
+		material = CreatePlasticMaterial(mp);
+	else if (name == "translucent")
+		material = CreateTranslucentMaterial(mp);
+	else if (name == "glass")
+		material = CreateGlassMaterial(mp);
+	else if (name == "mirror")
+		material = CreateMirrorMaterial(mp);
+	else if (name == "hair")
+		material = CreateHairMaterial(mp);
+	else if (name == "disney")
+		material = CreateDisneyMaterial(mp);
+	else if (name == "orbittrapmat")
+		material = CreateOrbitTrapMaterial(mp);
     else if (name == "mix") {
         std::string m1 = mp.FindString("namedmaterial1", "");
         std::string m2 = mp.FindString("namedmaterial2", "");

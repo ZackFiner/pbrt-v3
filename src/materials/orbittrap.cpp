@@ -27,6 +27,7 @@ namespace pbrt {
 			si->bsdf = ARENA_ALLOC(arena, BSDF)(*si, e);
 
 		Spectrum kd = op * Kd->Evaluate(*si).Clamp();
+		kd *= 1.0f - (si->rayMarchSteps / 1000.0f); // fake ambient occlusion from ray march steps
 		if (!kd.IsBlack()) {
 			BxDF *diff = ARENA_ALLOC(arena, LambertianReflection)(kd);
 			si->bsdf->Add(diff);

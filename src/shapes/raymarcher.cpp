@@ -69,7 +69,8 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
     //printf("%d", counter);
     Float t = 0.0f;
     Float lastDist;
-    for (int i = 0; i < maxRaySteps; i++) {  // ray marching happens here
+	int i;
+    for (i = 0; i < maxRaySteps; i++) {  // ray marching happens here
         lastDist = sdf(origin + dir * t);
         if (t < 0.0f || std::abs(t) > std::abs(maxMarchDist)) { 
                 break;
@@ -99,6 +100,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
             pHit, pError, Point2f(0, 0), -ray.d, dpdu, dpdv,
             Normal3f(0.0f, 0.0f, 0.0f), Normal3f(0.0f, 0.0f, 0.0f), ray.time,
             this));
+		isect->rayMarchSteps = i;
 	}
     return hit;
 }

@@ -48,7 +48,7 @@ AttributeEnd
 #
 
 AttributeBegin
-Material "matte" "color Kd" [0.8 0.8 0.8 ]
+Material "orbittrapmat" "color Kd" [0.8 0.8 0.8 ]
 	Rotate 0 0 1 0 
 	Shape "juliasetfractal" "float maxMarchDist" 10000.0 "integer maxRaySteps" 1000 "float hitEPS" 0.0001 "float normalEPS" 0.001 "integer juliaIterations" 40
 AttributeEnd

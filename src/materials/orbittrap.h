@@ -50,7 +50,7 @@ namespace pbrt {
 		bool remapRoughness;
 	};
 
-	OrbitTrapMaterial *CreateOrbitMaterial(const TextureParams &mp);
+	OrbitTrapMaterial *CreateOrbitTrapMaterial(const TextureParams &mp);
 
 }  // namespace pbrt
 
