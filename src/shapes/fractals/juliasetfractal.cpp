@@ -76,7 +76,6 @@ namespace pbrt {
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
 
-
 		Float dr = 1.0f; 
 		Float r = 0.0f; // we set it to z.length ahead
 		// for our iterative step, we approximate r and dr
