@@ -39,16 +39,17 @@ namespace pbrt {
 	 * In this class, we implement the sdf for the mandelbulb, but a very similar approach to this
 	 * will be taken for the julia set, as the julia set is very similar in it's cosntruction to the mandelbulb
 	 */
-	Float MandelbulbFractal::sdf(const Point3f &pos) const {
+	Float MandelbulbFractal::sdf(const Point3f &pos, Vector3f * trap) const {
 		Vector3f z = Vector3f(pos);
 		const Vector3f vpos = z;
 		Float dr = 1.0f;
 		Float r = 0.0f;
-
+		const Vector3f point = Vector3f(0.0f, 0.0f, 5.0f);
+		*trap = Vector3f(0.0f, 0.0f, 0.0f);
 
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < mandelIterations; i++) {
-			
+			Vector3f last_z = z;
 			r = z.Length();
 			if (r > bailoutRadius) break; // terminate execution if we escape
 
@@ -67,8 +68,58 @@ namespace pbrt {
 			// convert it back to cartesian coordiantes so we can add our constant term
 			z = zr * Vector3f(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
 			z += vpos; // add the constant term + c
+			if ((z-last_z).LengthSquared() > 0.0f)
+				*trap = (*trap + Normalize(z - last_z)); // compute orbit vector
+
+			*trap = trap->LengthSquared() > 0.0f ? Normalize(*trap) : *trap; // normalize the vector
 
 			
+		}
+		// use our distance estimation formula to determine distance to surface
+		return 0.5f*log(r)*r / dr;
+		/*
+		 * One thing we must take into consideration is how to track the path of the test point,
+		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
+		 * We may need to modify the structure of our class, and the surface intersection class
+		 * to accomodate these new requirements.
+		 *
+		 * One technique could be to use the UV coordinates for the surface to pass this information, this would offer atleast 2 floating
+		 * point numbers, and would not cause any problems because we have no plans to add texture support to escape time fractals at this time.
+		 */
+	}
+
+	Vector3f MandelbulbFractal::computeOrbitTrap(const Vector3f& v) const {
+		return v;
+	}
+
+	Float MandelbulbFractal::sdf(const Point3f &pos) const {
+		Vector3f z = Vector3f(pos);
+		const Vector3f vpos = z;
+		Float dr = 1.0f;
+		Float r = 0.0f;
+
+
+		// for our iterative step, we approximate r and dr
+		for (int i = 0; i < mandelIterations; i++) {
+
+			r = z.Length();
+			if (r > bailoutRadius) break; // terminate execution if we escape
+
+			// convert our cartesian position into spherical coordinates
+			Float theta = acos(z.z / r);
+			Float phi = atan2(z.y, z.x);
+			dr = pow(r, power - 1.0f)*power*dr + 1.0f; // our calculation of dr as descirbed above
+
+			// apply the necessary iterative operations to our spherical coordinate (using trig laws, we can express power as a multiple of angle
+			// and a power of radius)
+			// this is equivalent to fn-1(c)^power
+			Float zr = pow(r, power);
+			theta = theta * power;
+			phi = phi * power;
+
+			// convert it back to cartesian coordiantes so we can add our constant term
+			z = zr * Vector3f(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
+			z += vpos; // add the constant term + c
 		}
 		// use our distance estimation formula to determine distance to surface
 		return 0.5f*log(r)*r / dr;

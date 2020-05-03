@@ -26,7 +26,32 @@ namespace pbrt {
 		else
 			si->bsdf = ARENA_ALLOC(arena, BSDF)(*si, e);
 
-		Spectrum kd = op * Kd->Evaluate(*si).Clamp();
+
+		Spectrum col0 = Spectrum();
+		col0[0] = 0.1f; col0[1] = 0.9f; col0[2] = 0.1f;
+		Spectrum col1 = Spectrum();
+		col1[0] = 0.9f; col1[1] = 0.1f; col1[2] = 0.1f;
+		Spectrum col2 = Spectrum();
+		col2[0] = 0.8f; col2[1] = 0.0f; col2[2] = 0.2f;
+		Spectrum col3 = Spectrum();
+		col3[0] = 0.1f; col3[1] = 0.1f; col3[2] = 0.9f;
+		//Spectrum kd = op * Kd->Evaluate(*si).Clamp();
+		Float index = acos(Dot(si->orbitTrap, si->n)) * InvPi;
+		
+		if (isNaN<Float>(index)) // NAN CHECK
+			index = 1.0f;
+		
+		//std::cout << si->orbitTrap << std::endl;
+		//std::cout << index << std::endl;
+		Float p0 = 0.5f, pi0 = 1.0f / p0;
+		Float p1 = 0.6f, pi1 = 1.0f / (p1-p0);
+		Float p2 = 1.0f, pi2 = 1.0f / (p2-p1);
+		//Float index = p2;
+		Spectrum kd =  col0 + (col1 - col0)*Clamp(index*pi0, 0.0f, 1.0f)
+							+ (col2 - col1)*Clamp((index - p0)*pi1, 0.0f, 1.0f)
+							+ (col3 - col2)*Clamp((index - p1)*pi2, 0.0f, 1.0f);
+		kd *= op;
+
 		kd *= 1.0f - (si->rayMarchSteps / 1000.0f); // fake ambient occlusion from ray march steps
 		if (!kd.IsBlack()) {
 			BxDF *diff = ARENA_ALLOC(arena, LambertianReflection)(kd);
@@ -78,6 +103,9 @@ namespace pbrt {
 			mp.GetSpectrumTexture("Kr", Spectrum(0.f));
 		std::shared_ptr<Texture<Spectrum>> Kt =
 			mp.GetSpectrumTexture("Kt", Spectrum(0.f));
+
+
+
 		std::shared_ptr<Texture<Float>> roughness =
 			mp.GetFloatTexture("roughness", .1f);
 		std::shared_ptr<Texture<Float>> uroughness =

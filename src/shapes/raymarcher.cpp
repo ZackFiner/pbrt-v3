@@ -70,6 +70,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
     Float t = 0.0f;
     Float lastDist;
 	int i;
+	Vector3f orbitTrapVec;
     for (i = 0; i < maxRaySteps; i++) {  // ray marching happens here
         lastDist = sdf(origin + dir * t);
         if (t < 0.0f || std::abs(t) > std::abs(maxMarchDist)) { 
@@ -85,6 +86,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
 
 
 	if (hit && tHit != nullptr && isect != nullptr) {
+		
 		// This where you return your SurfaceInteraction structure and your tHit
 		// Important Note: You must check for null pointer as Intersect is called 
 		// by IntersectP() with null values for these parameters.
@@ -94,6 +96,8 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
                 auto pError = Vector3f(hitEPS * 10.0f, hitEPS * 10.0f, hitEPS * 10.0f);
                 auto aproximatedNorm =
                     GetNormalRM(pHit, normalEPS, Vector3f(0.0f, 0.0f, 1.0f));
+		Point3f orbitTestPoint = Point3f(pHit + aproximatedNorm * 2.0f);
+	    sdf(orbitTestPoint, &orbitTrapVec);
         Vector3f dpdu, dpdv;
 		CoordinateSystem(aproximatedNorm, &dpdu, &dpdv); // cordinate system will generate a coordinate sytem using our normal
         *isect = (*ObjectToWorld)(SurfaceInteraction( // we've been working in local space this entire time (notice how we don't store pos or rot params in this class)
@@ -101,6 +105,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
             Normal3f(0.0f, 0.0f, 0.0f), Normal3f(0.0f, 0.0f, 0.0f), ray.time,
             this));
 		isect->rayMarchSteps = i;
+		isect->orbitTrap = computeOrbitTrap(orbitTrapVec);
 	}
     return hit;
 }

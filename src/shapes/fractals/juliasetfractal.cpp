@@ -66,7 +66,7 @@ namespace pbrt {
 	}
 
 	//http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.9183&rep=rep1&type=pdf
-	Float JuliaSetFractal::sdf(const Point3f &pos) const {
+	Float JuliaSetFractal::sdf(const Point3f &pos, Vector3f *trap) const {
 		
 		Quaternion c;
 		c.v = Vector3f(-0.4, 0, 0);
@@ -76,18 +76,63 @@ namespace pbrt {
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
 
+		Quaternion point;
+		point.v = Vector3f(1.0f, 0.0f, 0.0f);
+		point.w = -0.5f;
+
 		Float dr = 1.0f; 
 		Float r = 0.0f; // we set it to z.length ahead
+		trap->x = FLT_MAX;
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < juliaIterations; i++) {
 			
 			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 			dr = 2.0f*r*dr;
 			z = sqrQuat2(z) + c;
-			
+			Quaternion diff = z - point;
+
+
+			trap->x = std::min(trap->x, std::sqrt(Dot(diff, diff)));
+
+
 			if (r > bailoutRadius) break; // terminate execution if we escape
 		}
 		
+		return 0.5f*log(r)*r / dr; // use our distance estimation formula to determine distance to surface
+		/*
+		 * One thing we must take into consideration is how to track the path of the test point,
+		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
+		 * We may need to modify the structure of our class, and the surface intersection class
+		 * to accomodate these new requirements.
+		 *
+		 * One technique could be to use the UV coordinates for the surface to pass this information, this would offer atleast 2 floating
+		 * point numbers, and would not cause any problems because we have no plans to add texture support to escape time fractals at this time.
+		 */
+	}
+
+	Float JuliaSetFractal::sdf(const Point3f &pos) const {
+
+		Quaternion c;
+		c.v = Vector3f(-0.4, 0, 0);
+		c.w = -0.5;
+
+		Quaternion z;
+		z.v = Vector3f(pos.y, pos.z, 0);
+		z.w = pos.x;
+
+
+		Float dr = 1.0f;
+		Float r = 0.0f; // we set it to z.length ahead
+		// for our iterative step, we approximate r and dr
+		for (int i = 0; i < juliaIterations; i++) {
+
+			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
+			dr = 2.0f*r*dr;
+			z = sqrQuat2(z) + c;
+					   
+			if (r > bailoutRadius) break; // terminate execution if we escape
+		}
+
 		return 0.5f*log(r)*r / dr; // use our distance estimation formula to determine distance to surface
 		/*
 		 * One thing we must take into consideration is how to track the path of the test point,

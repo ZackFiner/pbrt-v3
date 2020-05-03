@@ -28,6 +28,7 @@ namespace pbrt {
 			bailoutRadius(bailoutRadius),
 			juliaIterations(juliaIterations)
 		{}
+		Float sdf(const Point3f &pos, Vector3f* trap) const;
 		Float sdf(const Point3f &pos) const;
 		Bounds3f ObjectBound() const;
 

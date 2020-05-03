@@ -79,10 +79,18 @@ class RayMarcher : public Shape {
                              const Vector3f &defaultNormal) const;
 
     virtual Float sdf(const Point3f &pos) const;
+	virtual Float sdf(const Point3f &pos, Vector3f * trap) const {
+		return sdf(pos); // use our non-trap type if we have no implementation details for this version
+	}
+	virtual Vector3f computeOrbitTrap(const Vector3f& v) const {
+		return v;
+	}
+
     Float Area() const;
     Interaction Sample(const Point2f &u, Float *pdf) const;
     Interaction Sample(const Interaction &ref, const Point2f &u,
                        Float *pdf) const;
+
 
   private:
     // RayMarcher Private Data

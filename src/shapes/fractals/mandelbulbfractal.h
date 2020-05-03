@@ -28,7 +28,10 @@ namespace pbrt {
 			bailoutRadius(bailoutRadius),
 			mandelIterations(mandelIterations)
 		{}
+		Float sdf(const Point3f &pos, Vector3f * trap) const;
 		Float sdf(const Point3f &pos) const;
+		Vector3f computeOrbitTrap(const Vector3f& v) const;
+		
 		Bounds3f ObjectBound() const;
 
 	private:

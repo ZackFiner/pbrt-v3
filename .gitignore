@@ -1235,3 +1235,6 @@ VS2017/.vs/PBRT-V3/v15/Browse.VC.db
 VS2017/.vs/PBRT-V3/v15/.suo
 testScenes/pbrt-v3-scenes/
 testScenes/pbrt-scenes.git.tar.gz
+*.ipch
+*.obj
+*.ipch
