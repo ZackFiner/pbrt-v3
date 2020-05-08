@@ -7,11 +7,13 @@
 #define PBRT_SHAPES_FRAC_JULIASET_H
 #pragma once
 
-#define DEFAULT_JULIA_POW 2.0f
+#include "shapes/raymarcher.h"
+
 #define DEFAULT_JULIA_BAILOUT 10.0f
 #define DEFAULT_JULIA_ITERATIONS 20
+#define DEFAULT_JULIA_RCONST -0.5f
+#define DEFAULT_JULIA_ICONST Vector3f(-0.4f, 0.0f, 0.0f)
 
-#include "shapes/raymarcher.h"
 namespace pbrt {
 
 	class JuliaSetFractal : public RayMarcher {
@@ -19,21 +21,25 @@ namespace pbrt {
 		JuliaSetFractal(const Transform *ObjectToWorld,
 			const Transform *WorldToObject,
 			bool reverseOrientation, Float normalEPS, Float hitEPS,
-			Float maxMarchDist, int maxRaySteps, Float phiMax, Float power, Float bailoutRadius,
-			int juliaIterations)
+			Float maxMarchDist, int maxRaySteps, Float phiMax, Float bailoutRadius,
+			int juliaIterations, Float realConst, Vector3f imgConst)
 			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 1.0f,
 				-1.0f, 1.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
 				phiMax),
-			power(power),
 			bailoutRadius(bailoutRadius),
-			juliaIterations(juliaIterations)
-		{}
+			juliaIterations(juliaIterations),
+			constant()
+		{
+			constant.w = realConst;
+			constant.v = imgConst;
+		}
 		Float sdf(const Point3f &pos, Vector3f* trap) const;
 		Float sdf(const Point3f &pos) const;
 		Bounds3f ObjectBound() const;
 
 	private:
-		Float power, bailoutRadius;
+		Float bailoutRadius;
+		Quaternion constant;
 		int juliaIterations;
 	};
 	std::shared_ptr<Shape> CreateJuliaSetFractalShape(const Transform *o2w,

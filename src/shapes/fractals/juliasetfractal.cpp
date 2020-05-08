@@ -67,32 +67,26 @@ namespace pbrt {
 
 	//http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.9183&rep=rep1&type=pdf
 	Float JuliaSetFractal::sdf(const Point3f &pos, Vector3f *trap) const {
-		
-		Quaternion c;
-		c.v = Vector3f(-0.4, 0, 0);
-		c.w = -0.5;
+		*trap = Vector3f(FLT_MAX, FLT_MAX, FLT_MAX);
 
 		Quaternion z;
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
 
-		Quaternion point;
-		point.v = Vector3f(1.0f, 0.0f, 0.0f);
-		point.w = -0.5f;
 
 		Float dr = 1.0f; 
 		Float r = 0.0f; // we set it to z.length ahead
-		trap->x = FLT_MAX;
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < juliaIterations; i++) {
 			
 			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 			dr = 2.0f*r*dr;
-			z = sqrQuat2(z) + c;
-			Quaternion diff = z - point;
+			z = sqrQuat2(z) + constant;
 
 
-			trap->x = std::min(trap->x, std::sqrt(Dot(diff, diff)));
+			trap->x = trap->x > std::abs(z.w) ? std::abs(z.w) : trap->x;
+			trap->y = trap->y > std::abs(z.v.x) ? std::abs(z.v.x) : trap->y;
+			trap->z = trap->z > std::abs(z.v.y) ? std::abs(z.v.y) : trap->z;
 
 
 			if (r > bailoutRadius) break; // terminate execution if we escape
@@ -111,11 +105,6 @@ namespace pbrt {
 	}
 
 	Float JuliaSetFractal::sdf(const Point3f &pos) const {
-
-		Quaternion c;
-		c.v = Vector3f(-0.4, 0, 0);
-		c.w = -0.5;
-
 		Quaternion z;
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
@@ -128,7 +117,7 @@ namespace pbrt {
 
 			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 			dr = 2.0f*r*dr;
-			z = sqrQuat2(z) + c;
+			z = sqrQuat2(z) + constant;
 					   
 			if (r > bailoutRadius) break; // terminate execution if we escape
 		}
@@ -157,8 +146,11 @@ namespace pbrt {
 		// add parameters for iteration numbers, and possibly for the conditional folding planes and 'focus' point (incase we want to adjust the shape of our fractal)
 
 		Float bailoutRadius = params.FindOneFloat("bailoutRadius", DEFAULT_JULIA_BAILOUT);
-		Float power = params.FindOneFloat("power", DEFAULT_JULIA_POW);
 		int juliaIterations = params.FindOneInt("juliaIterations", DEFAULT_JULIA_ITERATIONS);
+		Float w = params.FindOneFloat("realConstant", DEFAULT_JULIA_RCONST);
+		Vector3f imaginary = params.FindOneVector3f("imaginaryConstants", DEFAULT_JULIA_ICONST);
+
+
 		Float normalEPS = params.FindOneFloat("normalEPS", DEFAULT_NORMAL_EPS);
 		Float hitEPS = params.FindOneFloat("hitEPS", DEFAULT_DIST_THRESHOLD);
 		Float maxMarchDist =
@@ -166,7 +158,7 @@ namespace pbrt {
 		int maxRaySteps = params.FindOneInt("maxRaySteps", DEFAULT_MAX_RAY_STEPS);
 		Float phimax = params.FindOneFloat("phimax", 360.f);
 		return std::make_shared<JuliaSetFractal>(
-			o2w, w2o, reverseOrientation, normalEPS, hitEPS, maxMarchDist, maxRaySteps, phimax, power, bailoutRadius, juliaIterations);
+			o2w, w2o, reverseOrientation, normalEPS, hitEPS, maxMarchDist, maxRaySteps, phimax, bailoutRadius, juliaIterations, w, imaginary);
 	}
 
 } // namespace pbrt

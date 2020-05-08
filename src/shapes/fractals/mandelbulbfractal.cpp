@@ -45,7 +45,7 @@ namespace pbrt {
 		Float dr = 1.0f;
 		Float r = 0.0f;
 		const Vector3f point = Vector3f(0.0f, 0.0f, 5.0f);
-		*trap = Vector3f(0.0f, 0.0f, 0.0f);
+		*trap = Vector3f(FLT_MAX, FLT_MAX, FLT_MAX);
 
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < mandelIterations; i++) {
@@ -68,10 +68,12 @@ namespace pbrt {
 			// convert it back to cartesian coordiantes so we can add our constant term
 			z = zr * Vector3f(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
 			z += vpos; // add the constant term + c
-			if ((z-last_z).LengthSquared() > 0.0f)
-				*trap = (*trap + Normalize(z - last_z)); // compute orbit vector
+			
 
-			*trap = trap->LengthSquared() > 0.0f ? Normalize(*trap) : *trap; // normalize the vector
+			// use planar orbit trapping
+			trap->x = trap->x > std::abs(z.x) ? std::abs(z.x) : trap->x;
+			trap->y = trap->y > std::abs(z.y) ? std::abs(z.y) : trap->y;
+			trap->z = trap->z > std::abs(z.z) ? std::abs(z.z) : trap->z;
 
 			
 		}
