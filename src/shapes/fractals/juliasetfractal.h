@@ -23,8 +23,8 @@ namespace pbrt {
 			bool reverseOrientation, Float normalEPS, Float hitEPS,
 			Float maxMarchDist, int maxRaySteps, Float phiMax, Float bailoutRadius,
 			int juliaIterations, Float realConst, Vector3f imgConst)
-			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 1.0f,
-				-1.0f, 1.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
+			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 10.0f,
+				-10.0f, 10.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
 				phiMax),
 			bailoutRadius(bailoutRadius),
 			juliaIterations(juliaIterations),

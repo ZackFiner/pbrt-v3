@@ -467,7 +467,7 @@ std::vector<std::shared_ptr<Shape>> MakeShapes(const std::string &name,
     else if (name == "waterpool")
         s = CreateWaterPoolShape(object2world, world2object, reverseOrientation,
                                  paramSet);
-    else if (name == "spaceFoldFractal")
+    else if (name == "spacefoldfractal")
         s = CreateSpaceFoldFractalShape(object2world, world2object, reverseOrientation,
                                  paramSet);
 	else if (name == "mandelbulbfractal")

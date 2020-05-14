@@ -21,8 +21,8 @@ namespace pbrt {
 			bool reverseOrientation, Float normalEPS, Float hitEPS,
 			Float maxMarchDist, int maxRaySteps, Float phiMax, Float power, Float bailoutRadius,
 			int mandelIterations)
-			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 1.0f,
-				-1.0f, 1.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
+			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 3.0f,
+				-2.0f, 2.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
 				phiMax),
 			power(power),
 			bailoutRadius(bailoutRadius),

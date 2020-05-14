@@ -52,7 +52,7 @@ namespace pbrt {
 							+ (col3 - col2)*Clamp((index - p1)*pi2, 0.0f, 1.0f);
 		*/
 		Spectrum kd = Spectrum();
-		Float invDivRad = 1.0f / 1.0f;
+		Float invDivRad = fudgeFactor;
 		kd[0] = Clamp(si->orbitTrap.x * invDivRad, 0.0f, 1.0f);
 		kd[1] = Clamp(si->orbitTrap.y * invDivRad, 0.0f, 1.0f);
 		kd[2] = Clamp(si->orbitTrap.z * invDivRad, 0.0f, 1.0f);
@@ -128,8 +128,9 @@ namespace pbrt {
 			mp.GetFloatTextureOrNull("bumpmap");
 		bool remapRoughness = mp.FindBool("remaproughness", true);
 		bool enableFakeAO = mp.FindBool("enableFakeAO", false);
+		Float fudgeFactor = mp.FindFloat("fudgeFactor", 1.0f);
 		return new OrbitTrapMaterial(Kd, Ks, Kr, Kt, roughness, uroughness, vroughness,
-			opacity, eta, bumpMap, remapRoughness, enableFakeAO);
+			opacity, eta, bumpMap, remapRoughness, enableFakeAO, fudgeFactor);
 	}
 
 }  // namespace pbrt

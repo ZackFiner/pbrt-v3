@@ -72,16 +72,18 @@ namespace pbrt {
 		Quaternion z;
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
-
+		Float debugLength = std::sqrt(quatLength2(z))*0.5f;
 
 		Float dr = 1.0f; 
 		Float r = 0.0f; // we set it to z.length ahead
+		r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
+
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < juliaIterations; i++) {
 			
-			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 			dr = 2.0f*r*dr;
 			z = sqrQuat2(z) + constant;
+			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 
 
 			trap->x = trap->x > std::abs(z.w) ? std::abs(z.w) : trap->x;
@@ -92,7 +94,7 @@ namespace pbrt {
 			if (r > bailoutRadius) break; // terminate execution if we escape
 		}
 		
-		return 0.5f*log(r)*r / dr; // use our distance estimation formula to determine distance to surface
+		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength); // use our distance estimation formula to determine distance to surface
 		/*
 		 * One thing we must take into consideration is how to track the path of the test point,
 		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
@@ -108,21 +110,23 @@ namespace pbrt {
 		Quaternion z;
 		z.v = Vector3f(pos.y, pos.z, 0);
 		z.w = pos.x;
-
+		Float debugLength = std::sqrt(quatLength2(z))*0.5f;
 
 		Float dr = 1.0f;
 		Float r = 0.0f; // we set it to z.length ahead
+		r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
+
 		// for our iterative step, we approximate r and dr
 		for (int i = 0; i < juliaIterations; i++) {
 
-			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
 			dr = 2.0f*r*dr;
 			z = sqrQuat2(z) + constant;
-					   
+			r = std::sqrt(quatLength2(z)); // THIS NEEDS OPTIMIZATION, i've seen implementations that avoid using sqrts up until the end
+
 			if (r > bailoutRadius) break; // terminate execution if we escape
 		}
-
-		return 0.5f*log(r)*r / dr; // use our distance estimation formula to determine distance to surface
+		
+		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength); // use our distance estimation formula to determine distance to surface
 		/*
 		 * One thing we must take into consideration is how to track the path of the test point,
 		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:

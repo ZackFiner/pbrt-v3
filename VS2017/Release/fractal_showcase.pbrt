@@ -1,0 +1,100 @@
+# CS116B - Project 1
+# Modifications Made by Zackary Finer
+# 2/12/2020
+
+
+#
+# The following lines define the size of the output image and the name of
+# of the file containing the result of rendering
+#
+Film "image" "string filename" ["infinite_rep.png"]
+	"integer xresolution" [1024] "integer yresolution" [1024]
+
+#
+# Sampling specification: PBRT will shoot 256 samples rays per pixel.
+# Increasing the number of samples per pixel will increase image quality
+# at the cost of increased rendering time.  Feel free to crank this value
+# up in your final images.
+#
+
+Sampler "halton" "integer pixelsamples" [64] 
+
+#
+# Integrator specification: PBRT will compute a single bounce of light.
+# Increasing maxdepth increases the bounces of light computed, and will
+# drastically increase the noise of the final image. To decrease noise,
+# increase the pixelsamples of the sampler above
+#
+Integrator "path" "integer maxdepth" [1]
+
+#
+# Camera configuration: the camera is located on the Z axis, and is
+# pointed at the center of the scene
+#
+LookAt 0.0 5.25 10.5  0 2 0   0 1 0
+Camera "perspective" "float fov" [30]
+
+WorldBegin
+
+AttributeBegin
+#LightSource "infinite" "string mapname" "textures/skylight-morn.exr"
+#  "rgb L" [5 3.5 3]  # make more red/orange
+LightSource "infinite" "string mapname" "textures/sky.exr"
+AttributeEnd
+
+
+AttributeBegin
+  AreaLightSource "area" "color L" [100 100 100]
+  Translate 7.7 4.5 6.7
+  Rotate -10 1 0 0 # Pitch
+  Rotate -110 0 1 0 # Yaw
+  Shape "disk" "float radius" [.5] 
+AttributeEnd
+
+
+
+#
+# The following sections define scene geometry and the material properties
+#
+
+AttributeBegin
+Material "matte" "color Kd" [0.8 0.8 0.8 ]
+Translate 0 0 0
+Shape "trianglemesh" "integer indices" [ 0 1 2 2 0 3 ]
+    "point P" [-10 0 10   -10 0 -10   10 0 -10   10 0 10 ]
+AttributeEnd
+
+AttributeBegin
+Material "matte" "color Kd" [0.8 0.8 0.8 ]
+Translate 0 0 0
+Shape "trianglemesh" "integer indices" [ 0 1 2 2 0 3 ]
+    "point P" [-10 -10 -10   10 -10 -10   10 10 -10   -10 10 -10 ]
+AttributeEnd
+
+
+AttributeBegin
+#Material "uber" "color Kd" [0.8 0.8 0.8 ]
+Material "orbittrapmat" "float fudgeFactor" 10.0
+	#Rotate 0 0 1 0 
+	Translate -2.25 2 0
+	Scale 0.8 0.8 0.8
+	Shape "juliasetfractal" "float maxMarchDist" 10000.0 "integer maxRaySteps" 1000 "float hitEPS" 0.0001 "float normalEPS" 0.0001 "integer juliaIterations" 40 "float realConstant" -0.85 "vector imaginaryConstants" [0.35 0.25 -0.0]
+AttributeEnd
+
+AttributeBegin
+Material "orbittrapmat" "bool enableFakeAO" "true" "float fudgeFactor" 2.0
+	#Rotate 0 0 1 0
+	Translate 0 2 0
+	Shape "mandelbulbfractal" "float maxMarchDist" 10000.0 "integer maxRaySteps" 1000 "float hitEPS" 0.0001 "float normalEPS" 0.0001 "integer mandelIterations" 40
+AttributeEnd
+
+AttributeBegin
+Material "uber" "color Kd" [0.8 0.8 0.8 ]
+	#Rotate 0 0 1 0
+	Translate 2.25 2 0
+	Shape "spacefoldfractal" "float hitEPS" 0.0001 "float normalEPS" 0.0001
+AttributeEnd
+
+WorldEnd
+
+

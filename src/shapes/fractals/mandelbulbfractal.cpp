@@ -70,15 +70,19 @@ namespace pbrt {
 			z += vpos; // add the constant term + c
 			
 
-			// use planar orbit trapping
+			// use planar orbit trapping, with a plane on each axis
 			trap->x = trap->x > std::abs(z.x) ? std::abs(z.x) : trap->x;
 			trap->y = trap->y > std::abs(z.y) ? std::abs(z.y) : trap->y;
 			trap->z = trap->z > std::abs(z.z) ? std::abs(z.z) : trap->z;
 
 			
 		}
+
+		Float debugLength = Vector3f(pos).Length()*0.5f;
+
+
 		// use our distance estimation formula to determine distance to surface
-		return 0.5f*log(r)*r / dr;
+		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength);
 		/*
 		 * One thing we must take into consideration is how to track the path of the test point,
 		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
@@ -93,7 +97,10 @@ namespace pbrt {
 	Vector3f MandelbulbFractal::computeOrbitTrap(const Vector3f& v) const {
 		return v;
 	}
-
+	/*
+	 * Christensen, M. (September 20, 2011). Distance Estimated 3D Fractals (V): The Mandelbulb & Different DE Approximations [Blog Post]. Retrieved from
+	 * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
+	 */
 	Float MandelbulbFractal::sdf(const Point3f &pos) const {
 		Vector3f z = Vector3f(pos);
 		const Vector3f vpos = z;
@@ -119,12 +126,16 @@ namespace pbrt {
 			theta = theta * power;
 			phi = phi * power;
 
+
 			// convert it back to cartesian coordiantes so we can add our constant term
 			z = zr * Vector3f(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
 			z += vpos; // add the constant term + c
 		}
+		Float debugLength = Vector3f(pos).Length()*0.5f;
+		
+
 		// use our distance estimation formula to determine distance to surface
-		return 0.5f*log(r)*r / dr;
+		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength);
 		/*
 		 * One thing we must take into consideration is how to track the path of the test point,
 		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:

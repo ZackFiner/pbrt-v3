@@ -73,7 +73,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
 	Vector3f orbitTrapVec;
     for (i = 0; i < maxRaySteps; i++) {  // ray marching happens here
         lastDist = sdf(origin + dir * t);
-        if (t < 0.0f || std::abs(t) > std::abs(maxMarchDist)) { 
+        if (t < 0.0f || std::abs(t) > maxMarchDist) { 
                 break;
         } else if (std::abs(lastDist) < hitEPS) {
             hit = true;

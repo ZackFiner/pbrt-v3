@@ -26,7 +26,8 @@ namespace pbrt {
 			const std::shared_ptr<Texture<Float>> &eta,
 			const std::shared_ptr<Texture<Float>> &bumpMap,
 			bool remapRoughness,
-			bool enableFakeAO)
+			bool enableFakeAO,
+			Float fudgeFactor)
 			: Kd(Kd),
 			Ks(Ks),
 			Kr(Kr),
@@ -38,7 +39,9 @@ namespace pbrt {
 			eta(eta),
 			bumpMap(bumpMap),
 			remapRoughness(remapRoughness), 
-			enableFakeAO(enableFakeAO) {}
+			enableFakeAO(enableFakeAO),
+			fudgeFactor(fudgeFactor)
+		{}
 
 		void ComputeScatteringFunctions(SurfaceInteraction *si, MemoryArena &arena,
 			TransportMode mode,
@@ -49,6 +52,7 @@ namespace pbrt {
 		std::shared_ptr<Texture<Spectrum>> Kd, Ks, Kr, Kt, opacity;
 		std::shared_ptr<Texture<Float>> roughness, roughnessu, roughnessv, eta,
 			bumpMap;
+		Float fudgeFactor;
 		bool enableFakeAO;
 		bool remapRoughness;
 	};
