@@ -9,6 +9,16 @@
 
 #include "shapes/raymarcher.h"
 #define DEFAULT_FOLD_ITERATIONS 20
+
+/*********************************************************
+ *	FILENAME: shapes/fractals/spaceFoldFractal.h
+ *  AUTHOR: Zackary Finer
+ *
+ * Description: Provides implementation of seirpinski
+ * pyramid fractals for PBRT
+ *
+ *********************************************************/
+
 namespace pbrt {
 
 class SpaceFoldFractal : public RayMarcher {
@@ -23,7 +33,7 @@ class SpaceFoldFractal : public RayMarcher {
 		foldIterations(foldIterations)
 	{}
     Float sdf(const Point3f &pos) const;
-    Bounds3f ObjectBound() const;
+    //Bounds3f ObjectBound() const;
 
   private:
 	  int foldIterations;

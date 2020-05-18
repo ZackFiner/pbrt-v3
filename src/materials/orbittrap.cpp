@@ -5,6 +5,17 @@
 #include "texture.h"
 #include "interaction.h"
 
+/*********************************************************
+ *	FILENAME: materials/orbittrap.cpp
+ *  AUTHOR:  Matt Pharr, Greg Humphreys, and Wenzel Jakob
+ *  MODIFIED BY: Zackary Finer
+ *
+ * Description: A version of PBRT's "Uber" texture modified
+ * to algorithmically color fractal shapes using data
+ * collected through orbit trapping.
+ *
+ *********************************************************/
+
 namespace pbrt {
 
 	// MatteMaterial Method Definitions
@@ -27,6 +38,7 @@ namespace pbrt {
 			si->bsdf = ARENA_ALLOC(arena, BSDF)(*si, e);
 
 		/*
+		// Below is an example of how a color gradient can be set up to index a color over the range [0, 1]
 		Spectrum col0 = Spectrum();
 		col0[0] = 0.1f; col0[1] = 0.9f; col0[2] = 0.1f;
 		Spectrum col1 = Spectrum();
@@ -51,6 +63,13 @@ namespace pbrt {
 							+ (col2 - col1)*Clamp((index - p0)*pi1, 0.0f, 1.0f)
 							+ (col3 - col2)*Clamp((index - p1)*pi2, 0.0f, 1.0f);
 		*/
+
+		/*************************************************************************************
+		 * Below is where we use the data collected from orbit trapping to color the shape:
+		 * Here, the minimum distance from each plane (collected in the x,y and z components)
+		 * are used to index the color along the red, green, and blue spectrums respectively
+		 *
+		 *************************************************************************************/
 		Spectrum kd = Spectrum();
 		Float invDivRad = fudgeFactor;
 		kd[0] = Clamp(si->orbitTrap.x * invDivRad, 0.0f, 1.0f);
@@ -58,6 +77,13 @@ namespace pbrt {
 		kd[2] = Clamp(si->orbitTrap.z * invDivRad, 0.0f, 1.0f);
 		kd *= op;
 
+		/*************************************************************************************
+		 * Optionally, you could use the number of steps taken by the marcher to darken each
+		 * Rendered point, yielding an aproximated AO
+		 * (approximated because regions of the fractal that are more complex, and therefore
+		 * have more potentially occluding surfaces will appear darker because more steps had
+		 * to be taken)
+		 *************************************************************************************/
 		if (enableFakeAO)
 			kd *= 1.0f - (si->rayMarchSteps / 1000.0f); // fake ambient occlusion from ray march steps
 

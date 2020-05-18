@@ -51,6 +51,7 @@ namespace pbrt {
 #define DEFAULT_DIST_THRESHOLD .01f
 #define DEFAULT_MAX_DISTANCE 100.0f
 #define DEFAULT_NORMAL_EPS .01f
+#define DEFAULT_BOUNDS_SAMPLE_DIST 4.0f
 // Done.
 // Sphere Declarations
 class RayMarcher : public Shape {
@@ -70,7 +71,16 @@ class RayMarcher : public Shape {
           normalEPS(normalEPS),
           hitEPS(hitEPS),
           maxMarchDist(maxMarchDist),
-          maxRaySteps(maxRaySteps) {}
+          maxRaySteps(maxRaySteps),
+		  boundsX(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(DEFAULT_BOUNDS_SAMPLE_DIST,0,0))),
+		  boundsY(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(0, DEFAULT_BOUNDS_SAMPLE_DIST, 0))),
+		  boundsZ(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(0, 0, DEFAULT_BOUNDS_SAMPLE_DIST))),
+		  boundsnX(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(-DEFAULT_BOUNDS_SAMPLE_DIST, 0, 0))),
+		  boundsnY(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(0, -DEFAULT_BOUNDS_SAMPLE_DIST, 0))),
+		  boundsnZ(DEFAULT_BOUNDS_SAMPLE_DIST - sdf(Point3f(0, 0, -DEFAULT_BOUNDS_SAMPLE_DIST)))
+	{
+		
+	}
 
     Bounds3f ObjectBound() const;
     bool Intersect(const Ray &ray, Float *tHit, SurfaceInteraction *isect,
@@ -96,6 +106,10 @@ class RayMarcher : public Shape {
     // RayMarcher Private Data
     const Float radius;
     const Float zMin, zMax;
+
+	const Float boundsX, boundsY, boundsZ, boundsnX, boundsnY, boundsnZ;
+
+
     const Float normalEPS, hitEPS, maxMarchDist;
     const int maxRaySteps;
     const Float thetaMin, thetaMax, phiMax;

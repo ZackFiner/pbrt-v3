@@ -10,6 +10,16 @@
 #include "pbrt.h"
 #include "material.h"
 
+/*********************************************************
+ *	FILENAME: materials/orbittrap.h
+ *  AUTHOR:  Matt Pharr, Greg Humphreys, and Wenzel Jakob
+ *  MODIFIED BY: Zackary Finer
+ *
+ * Description: A version of PBRT's "Uber" texture modified
+ * to algorithmically color fractal shapes using data
+ * collected through orbit trapping.
+ *
+ *********************************************************/
 namespace pbrt {
 
 	// MatteMaterial Declarations

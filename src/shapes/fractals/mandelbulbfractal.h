@@ -12,6 +12,15 @@
 #define DEFAULT_MANDEL_ITERATIONS 20
 
 #include "shapes/raymarcher.h"
+
+/*********************************************************
+ *	FILENAME: shapes/fractals/mandebulbfractal.h
+ *  AUTHOR: Zackary Finer
+ * 
+ * Description: Provides implementation of mandelbulb for
+ * PBRT renderer
+ * 
+ *********************************************************/
 namespace pbrt {
 
 	class MandelbulbFractal : public RayMarcher {
@@ -21,7 +30,7 @@ namespace pbrt {
 			bool reverseOrientation, Float normalEPS, Float hitEPS,
 			Float maxMarchDist, int maxRaySteps, Float phiMax, Float power, Float bailoutRadius,
 			int mandelIterations)
-			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 3.0f,
+			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 1.0f,
 				-2.0f, 2.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
 				phiMax),
 			power(power),
@@ -32,7 +41,7 @@ namespace pbrt {
 		Float sdf(const Point3f &pos) const;
 		Vector3f computeOrbitTrap(const Vector3f& v) const;
 		
-		Bounds3f ObjectBound() const;
+		//Bounds3f ObjectBound() const;
 
 	private:
 		Float power, bailoutRadius;

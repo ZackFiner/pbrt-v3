@@ -7,8 +7,8 @@
 # The following lines define the size of the output image and the name of
 # of the file containing the result of rendering
 #
-Film "image" "string filename" ["infinite_rep.png"]
-	"integer xresolution" [1024] "integer yresolution" [1024]
+Film "image" "string filename" ["fractal_showcase.png"]
+	"integer xresolution" [300] "integer yresolution" [300]
 
 #
 # Sampling specification: PBRT will shoot 256 samples rays per pixel.
@@ -25,7 +25,7 @@ Sampler "halton" "integer pixelsamples" [64]
 # drastically increase the noise of the final image. To decrease noise,
 # increase the pixelsamples of the sampler above
 #
-Integrator "path" "integer maxdepth" [1]
+Integrator "path" "integer maxdepth" [3]
 
 #
 # Camera configuration: the camera is located on the Z axis, and is
@@ -82,18 +82,34 @@ Material "orbittrapmat" "float fudgeFactor" 10.0
 AttributeEnd
 
 AttributeBegin
+#Material "uber" "color Kd" [0.8 0.2 0.2]
 Material "orbittrapmat" "bool enableFakeAO" "true" "float fudgeFactor" 2.0
 	#Rotate 0 0 1 0
 	Translate 0 2 0
+	#Shape "sphere"
+	#Shape "raymarcher" "float hitEPS" 0.0001 "float normalEPS" 0.0001
 	Shape "mandelbulbfractal" "float maxMarchDist" 10000.0 "integer maxRaySteps" 1000 "float hitEPS" 0.0001 "float normalEPS" 0.0001 "integer mandelIterations" 40
 AttributeEnd
 
 AttributeBegin
-Material "uber" "color Kd" [0.8 0.8 0.8 ]
+Material "uber" "color Kd" [0.8 0.8 0.8]
+#Material "glass" #"float eta" 1.5
 	#Rotate 0 0 1 0
 	Translate 2.25 2 0
-	Shape "spacefoldfractal" "float hitEPS" 0.0001 "float normalEPS" 0.0001
+	Shape "spacefoldfractal" "float hitEPS" 0.0001 "float normalEPS" 0.0001 "integer foldIterations" 8
 AttributeEnd
+
+AttributeBegin
+#Material "uber" "color Kd" [0.8 0.8 0.8 ]
+Material "glass"
+	#Rotate 0 0 1 0
+	Translate 0 4 5.25
+	Shape "sphere"
+	#Shape "raymarcher" "float hitEPS" 0.0001 "float normalEPS" 0.0001
+	#Shape "spacefoldfractal" "float hitEPS" 0.0001 "float normalEPS" 0.0001 "integer foldIterations" 8
+AttributeEnd
+
+
 
 WorldEnd
 

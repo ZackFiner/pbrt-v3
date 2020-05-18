@@ -13,6 +13,16 @@
 #define DEFAULT_JULIA_ITERATIONS 20
 #define DEFAULT_JULIA_RCONST -0.5f
 #define DEFAULT_JULIA_ICONST Vector3f(-0.4f, 0.0f, 0.0f)
+#define DEFAULT_JULIA_ZSLICE 0.0f
+
+/*********************************************************
+ *	FILENAME: shapes/fractals/juliasetfractal.h
+ *  AUTHOR: Zackary Finer
+ *
+ * Description: provides an implementation of a julia set
+ * for PBRT renderer
+ *
+ *********************************************************/
 
 namespace pbrt {
 
@@ -22,12 +32,13 @@ namespace pbrt {
 			const Transform *WorldToObject,
 			bool reverseOrientation, Float normalEPS, Float hitEPS,
 			Float maxMarchDist, int maxRaySteps, Float phiMax, Float bailoutRadius,
-			int juliaIterations, Float realConst, Vector3f imgConst)
+			int juliaIterations, Float zSlice, Float realConst, Vector3f imgConst)
 			: RayMarcher(ObjectToWorld, WorldToObject, reverseOrientation, 10.0f,
 				-10.0f, 10.0f, normalEPS, hitEPS, maxMarchDist, maxRaySteps,
 				phiMax),
 			bailoutRadius(bailoutRadius),
 			juliaIterations(juliaIterations),
+			zSlice(zSlice),
 			constant()
 		{
 			constant.w = realConst;
@@ -39,6 +50,7 @@ namespace pbrt {
 
 	private:
 		Float bailoutRadius;
+		Float zSlice;
 		Quaternion constant;
 		int juliaIterations;
 	};

@@ -46,8 +46,8 @@ namespace pbrt {
 
 // Sphere Method Definitions
 Bounds3f RayMarcher::ObjectBound() const {
-    return Bounds3f(Point3f(-radius, -radius, zMin),
-                    Point3f(radius, radius, zMax));
+    return Bounds3f(Point3f(-boundsnX, -boundsnY, -boundsnZ),
+                    Point3f(boundsX, boundsY, boundsZ));
 }
 
 
@@ -71,6 +71,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
     Float lastDist;
 	int i;
 	Vector3f orbitTrapVec;
+	if (sdf(origin) >= 0.0f)
     for (i = 0; i < maxRaySteps; i++) {  // ray marching happens here
         lastDist = sdf(origin + dir * t);
         if (t < 0.0f || std::abs(t) > maxMarchDist) { 
@@ -91,7 +92,7 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
 		// Important Note: You must check for null pointer as Intersect is called 
 		// by IntersectP() with null values for these parameters.
         
-		*tHit = t; // we set our distance to point of incidence to be the distance we found while marching the ray
+		
 		auto pHit = origin + dir * t;
                 auto pError = Vector3f(hitEPS * 10.0f, hitEPS * 10.0f, hitEPS * 10.0f);
                 auto aproximatedNorm =
@@ -106,6 +107,8 @@ bool RayMarcher::Intersect(const Ray &r, Float *tHit,
             this));
 		isect->rayMarchSteps = i;
 		isect->orbitTrap = computeOrbitTrap(orbitTrapVec);
+
+		*tHit = t; // we set our distance to point of incidence to be the distance we found while marching the ray
 	}
     return hit;
 }

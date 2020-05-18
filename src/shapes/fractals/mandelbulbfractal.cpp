@@ -4,11 +4,25 @@
 #include "shapes/fractals/mandelbulbfractal.h"
 #include "stats.h"
 
+/*********************************************************
+ *	FILENAME: shapes/fractals/mandebulbfractal.cpp
+ *  AUTHOR: Zackary Finer
+ *
+ * Description: Provides implementation of mandelbulb for
+ * PBRT renderer
+ *
+ *********************************************************/
+
 namespace pbrt {
-	/*
+	/*******************************************************************************************************************************************************
+	 * References:
 	 * Christensen, M. (September 20, 2011). Distance Estimated 3D Fractals (V): The Mandelbulb & Different DE Approximations [Blog Post]. Retrieved from
 	 * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
 	 * 
+	 * Hart, J. C., Sandin, D. J., & Kauffman, L. H. (1989). Ray tracing deterministic 3-D fractals. ACM SIGGRAPH Computer Graphics, 23(3), 289-296.
+	 * doi:10.1145/74334.74363
+	 * 
+	 * Description:
 	 * The mandlebulb, like it's 2d mandlebrot counterpart, is an example of an escape time fractal. Escape time fractals are mathematically
 	 * defined by performing some operation on a point (in the case of the mandlebrot set, a complex number) and testing to determine
 	 * whether the operation diverges (often via testing to see if it escapes a given radius) or convergese (whether it stays within a given
@@ -37,8 +51,9 @@ namespace pbrt {
 	 * to calcualte dr for our approximation.
 	 *
 	 * In this class, we implement the sdf for the mandelbulb, but a very similar approach to this
-	 * will be taken for the julia set, as the julia set is very similar in it's cosntruction to the mandelbulb
-	 */
+	 * will be taken for the julia set
+	 *
+	 ********************************************************************************************************************************************************/
 	Float MandelbulbFractal::sdf(const Point3f &pos, Vector3f * trap) const {
 		Vector3f z = Vector3f(pos);
 		const Vector3f vpos = z;
@@ -81,26 +96,19 @@ namespace pbrt {
 		Float debugLength = Vector3f(pos).Length()*0.5f;
 
 
-		// use our distance estimation formula to determine distance to surface
+		// use our distance estimation formula to determine distance to surface - we apply a clamp to ensure we don't overstep
 		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength);
-		/*
-		 * One thing we must take into consideration is how to track the path of the test point,
-		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
-		 * We may need to modify the structure of our class, and the surface intersection class
-		 * to accomodate these new requirements.
-		 *
-		 * One technique could be to use the UV coordinates for the surface to pass this information, this would offer atleast 2 floating
-		 * point numbers, and would not cause any problems because we have no plans to add texture support to escape time fractals at this time.
-		 */
 	}
 
-	Vector3f MandelbulbFractal::computeOrbitTrap(const Vector3f& v) const {
-		return v;
-	}
-	/*
+	/*******************************************************************************************************************************************************
+	 * References:
 	 * Christensen, M. (September 20, 2011). Distance Estimated 3D Fractals (V): The Mandelbulb & Different DE Approximations [Blog Post]. Retrieved from
 	 * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
-	 */
+	 *
+	 * Hart, J. C., Sandin, D. J., & Kauffman, L. H. (1989). Ray tracing deterministic 3-D fractals. ACM SIGGRAPH Computer Graphics, 23(3), 289-296.
+	 * doi:10.1145/74334.74363
+	 *
+	 *******************************************************************************************************************************************************/
 	Float MandelbulbFractal::sdf(const Point3f &pos) const {
 		Vector3f z = Vector3f(pos);
 		const Vector3f vpos = z;
@@ -132,23 +140,14 @@ namespace pbrt {
 			z += vpos; // add the constant term + c
 		}
 		Float debugLength = Vector3f(pos).Length()*0.5f;
-		
+
 
 		// use our distance estimation formula to determine distance to surface
 		return Clamp(0.5f*log(r)*r / dr, -debugLength, debugLength);
-		/*
-		 * One thing we must take into consideration is how to track the path of the test point,
-		 * and feed it to a BSDF, since this will be needed for our algorithmic shading techniques:
-		 * We may need to modify the structure of our class, and the surface intersection class
-		 * to accomodate these new requirements.
-		 *
-		 * One technique could be to use the UV coordinates for the surface to pass this information, this would offer atleast 2 floating
-		 * point numbers, and would not cause any problems because we have no plans to add texture support to escape time fractals at this time.
-		 */
 	}
 
-	Bounds3f MandelbulbFractal::ObjectBound() const {
-		return Bounds3f(Point3f(-20, -20, -20), Point3f(20, 20, 20));
+	Vector3f MandelbulbFractal::computeOrbitTrap(const Vector3f& v) const {
+		return v;
 	}
 
 	std::shared_ptr<Shape> CreateMandelbulbFractalShape(const Transform *o2w,
@@ -156,8 +155,6 @@ namespace pbrt {
 		bool reverseOrientation,
 		const ParamSet &params) {
 
-		// add parameters for iteration numbers, and possibly for the conditional folding planes and 'focus' point (incase we want to adjust the shape of our fractal)
-		
 		Float bailoutRadius = params.FindOneFloat("bailoutRadius", DEFAULT_MANDEL_BAILOUT);
 		Float power = params.FindOneFloat("power", DEFAULT_MANDEL_POW);
 		int mandelIterations = params.FindOneInt("mandelIterations", DEFAULT_MANDEL_ITERATIONS);
